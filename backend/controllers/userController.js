@@ -3,7 +3,6 @@ import User from "../models/User.js";
 import ApiError from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -146,6 +145,27 @@ const loginUser = asyncHandler(async (req, res, next) => {
     );
 });
 
+const logoutUser = asyncHandler(async (req, res, next) => {
+  await User.findByIdAndUpdate(
+      req.user._id,
+      {
+          $set: { refreshToken: undefined },
+      },
+      { new: true },
+  );
+
+  const options = {
+      httpOnly: true,
+      path: "/",
+  };
+
+  return res
+      .status(200)
+      .clearCookie("accessToken", "", options)
+      .clearCookie("refreshToken", "", options)
+      .json(new ApiResponse(200, {}, "Logged out successfully"));
+});
+
 const getAdminUsers = async (req, res) => {
   try {
     const { name } = req.params;
@@ -165,5 +185,5 @@ const getAdminUsers = async (req, res) => {
   }
 };
 
-export { userRegister, getAdminUsers, loginUser };
+export { userRegister, getAdminUsers, loginUser,logoutUser };
 export default router;
