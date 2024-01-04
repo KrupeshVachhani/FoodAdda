@@ -1,67 +1,169 @@
-const express = require("express");
+import express from "express";
+import User from "../models/User.js";
+import ApiError from "../utils/ApiErrors.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 const router = express.Router();
-const bcrypt = require("bcrypt");
-const User = require("../models/User.js");
-const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
-module.exports = {
-  login: async function (req, res) {
-    try {
-      // Extract user data from the request body
-      const { name, email, password } = req.body;
+//generating access token and refresh token
+const generateAccessAndRefreshToken = async (userId) => {
+  try {
+      const user = await User.findById(userId);
+      console.log("grf",user);
 
-      // Check if the email is already registered
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "Email already registered." });
-      }
+      //generate a token
+      const accessToken = await user.generateTokens();
+      const refreshToken = await user.generateRefreshToken();
 
-      // Check if the password is provided and not empty
-      if (!password) {
-        return res.status(400).json({ message: "Password is required." });
-      }
+      console.log("generated");
 
-      // Hash the password before saving it to the database
-      const hashedPassword = await bcrypt.hash(password, 10);
+      //save refresh token in db
+      user.refreshToken = refreshToken;
 
-      // Create a new user instance
-      const newUser = new User({
-        name,
-        email,
-        password: hashedPassword,
-      });
+      //validateBeforeSave - false
+      //because we don't have password field in user model
+      await user.save({ validateBeforeSave: false });
 
-      // Save the user to the database
-      await newUser.save();
-
-      res.status(201).json({ message: "User registered successfully." });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error." });
-    }
-  },
-
-  getAdminUsers: async function (req, res) {
-    try {
-      // Extract the name parameter from the request
-      const { name } = req.params;
-
-      // Find the user by name in the database
-      const user = await User.findOne({ name });
-
-      // Check if the user exists and is an admin
-      if (!user || user.role !== "admin") {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-
-      // If the user is an admin, fetch all users from the database
-      const users = await User.find();
-
-      res.status(200).json(users);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Internal Server Error." });
-    }
-  },
+      return { accessToken, refreshToken };
+  } catch (error) {
+      throw new ApiError(500, "Token generation failed");
+  }
 };
+
+const userRegister = asyncHandler(async (req, res) => {
+  const { username, email, password } = req.body;
+
+  if (
+    //checking all the fields are filled or not using some method
+    [username, email, password].some((field) => field?.trim() === "")
+  ) {
+    throw new ApiError(400, "Please fill all the fields");
+  }
+
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new ApiError("User already exists.");
+  }
+
+  if (!password) {
+    return res.status(400).json({ message: "Password is required." });
+  }
+
+  const newUser = await User.create({
+    username,
+    email,
+    password,
+  });
+
+  //remove password and refresh token field from response
+  const createdUser = await User.findById(newUser._id).select(
+    "-password -refreshToken"
+  );
+
+  //check for user creation
+  if (!createdUser) {
+    throw new ApiError(500, "User creation failed");
+  }
+
+  res.status(201).json({ message: "User registered successfully." });
+
+  //return response
+  return res
+    .status(201)
+    .json(new ApiResponse(201, "User created", createdUser));
+});
+
+const loginUser = asyncHandler(async (req, res, next) => {
+  //req.body - data
+  //username or email
+  //find the user
+  //password check
+  //generate access token and refresh token
+  //send cookie
+
+  const { username, email, password } = req.body;
+
+  console.log(email);
+
+  if (!(email || username)) {
+    throw new ApiError(400, "Please provide email");
+  }
+
+  //find the user
+  const user = await User.findOne({ $or: [{ username }, { email }] });
+
+  // console.log(user);
+  //check if user exists
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  //password check
+  const isPasswordMatch = await user.isPasswordMatch(password);
+
+  if (!isPasswordMatch) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  console.log('password matched')
+
+  //generate access token and refresh token
+  const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
+    user._id
+  );
+
+  //don't send password and refresh token in response
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  const options = {
+    httpOnly: true,
+    path: "/",
+  };
+
+  //send cookie
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          message: "Logged in successfully",
+          user: loggedInUser,
+          accessToken,
+          refreshToken,
+        },
+        "Logged in successfully"
+      )
+    );
+});
+
+const getAdminUsers = async (req, res) => {
+  try {
+    const { name } = req.params;
+
+    const user = await User.findOne({ name });
+
+    if (!user || user.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const users = await User.find();
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error." });
+  }
+};
+
+export { userRegister, getAdminUsers, loginUser };
+export default router;

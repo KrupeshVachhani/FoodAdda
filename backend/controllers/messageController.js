@@ -1,7 +1,6 @@
-// message.controller.js
-const Message = require("../models/Message");
+import Message from "../models/Message.js";
 
-const createMessage = async (req, res) => {
+export const createMessage = async (req, res) => {
   try {
     const { name, message } = req.body;
     const newMessage = new Message({ name, message });
@@ -12,6 +11,4 @@ const createMessage = async (req, res) => {
   }
 };
 
-module.exports = {
-  createMessage,
-};
+export default createMessage;

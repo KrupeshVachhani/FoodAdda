@@ -1,9 +1,11 @@
-const express = require('express');
+import express from "express";
+import { userRegister, getAdminUsers , loginUser } from "../controllers/userController.js";
+// import { verifyJWT } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const userController = require('../controllers/userController');
-const authMiddleware = require('../middleware/authMiddleware');
 
-router.post('/login', userController.login);
-router.get("/admin/:name",  userController.getAdminUsers);
+router.route("/register").post(userRegister);
+router.route("/login").post(loginUser);
+router.route("/admin/:name").get(getAdminUsers);
 
-module.exports = router;
+export default router;

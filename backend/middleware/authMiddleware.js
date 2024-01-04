@@ -1,18 +1,52 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+import User from "../models/User.js";
+import ApiError from "../utils/ApiErrors.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import jwt from "jsonwebtoken";
 
-module.exports = async (req, res, next) => {
-  const token = req.cookies.token;
+export const verifyJWT = asyncHandler(async (req, res, next) => {
+    try {
+        //get token from header
+        const token =
+            req.cookies?.accessToken 
+            // ||
+            // req.headers("Authorization")?.replace("Bearer ", "");
 
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
+        //check if token exists
+        if (!token) {
+            return next(
+                new ApiError(
+                    401,
+                    "You are not authorized to access this route",
+                ),
+            );
+        }
 
-  try {
-    const decoded = jwt.verify(token, process.env.SECRET_KEY);
-    req.user = await User.findById(decoded.userId);
-    next();
-  } catch (error) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-};
+        //verify token
+        const decodedToken = jwt.verify(
+            token,
+            process.env.ACCESS_TOKEN_SECRETE,
+        );
+
+        //check if user exists
+        const user = User.findById(decodedToken._id).select(
+            "-password -refreshToken",
+        );
+
+        if (!user) {
+            throw new ApiError(
+                401,
+                "You are not authorized to access this route",
+            );
+        }
+
+        //set user in req object
+        req.user = user;
+
+        next();
+    } catch (error) {
+        throw new ApiError(
+            401,
+            error?.message || "You are not authorized to access this route",
+        );
+    }
+});

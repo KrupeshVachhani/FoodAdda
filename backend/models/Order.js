@@ -1,5 +1,4 @@
-// Order.js
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   userName: {
@@ -52,12 +51,10 @@ const orderSchema = new mongoose.Schema({
       quantity: { type: Number },
     },
   },
-
   email: {
     type: String,
     required: true,
   },
-
   totalPrice: {
     type: Number,
     required: true,
@@ -66,4 +63,4 @@ const orderSchema = new mongoose.Schema({
 
 const Order = mongoose.model("Order", orderSchema);
 
-module.exports = Order;
+export default Order;

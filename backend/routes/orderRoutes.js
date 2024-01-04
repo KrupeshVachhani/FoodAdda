@@ -1,13 +1,18 @@
-const express = require('express');
+import express from "express";
+import {
+  createOrder,
+  getOrdersForUser,
+  getOrdersForAdmin,
+} from "../controllers/orderController.js";
+import { verifyJWT } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const orderController = require('../controllers/orderController');
-const authMiddleware = require('../middleware/authMiddleware');
 
 // POST request to create a new order
-router.post('/postorder', orderController.createOrder);
+router.post("/postorder", createOrder);
 
 // GET request to fetch all orders for a specific user
-router.get('/user/:userId', authMiddleware, orderController.getOrdersForUser);
-router.get('/admin/:name', orderController.getOrdersForAdmin);
+router.get("/user/:userId", verifyJWT, getOrdersForUser);
+router.get("/admin/:name", getOrdersForAdmin);
 
-module.exports = router;
+export default router;

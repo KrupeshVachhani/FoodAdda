@@ -1,9 +1,9 @@
-// message.routes.js
-const express = require("express");
+import express from 'express';
+import { createMessage } from '../controllers/messageController.js';
+
 const router = express.Router();
-const messageController = require("../controllers/messageController");
 
 // Route for creating a new message
-router.post("/", messageController.createMessage);
+router.post('/', createMessage);
 
-module.exports = router;
+export default router;
