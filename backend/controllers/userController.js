@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/User.js";
 import ApiError from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 import asyncHandler from "../utils/asyncHandler.js";
 import dotenv from "dotenv";
 
@@ -145,6 +146,25 @@ const loginUser = asyncHandler(async (req, res, next) => {
     );
 });
 
+const userDetails = asyncHandler(async (req, res, next) => {
+  // console.log(req.cookies)
+  // Extract refresh token and access token from request headers or cookies
+  const refreshToken = req.cookies.refreshToken; // Change this according to your token extraction method
+  const accessToken = req.cookies.accessToken; // Change this according to your token extraction method
+
+  if (!(refreshToken || accessToken)) {
+    throw new ApiError(400, "Refresh token and access token are required");
+  }
+
+  // Verify the access token
+  const decodedAccessToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRETE);
+
+  // console.log("decodedaccesstoken",decodedAccessToken);
+  
+  // Return the user details
+  return res.status(200).json(new ApiResponse(200, decodedAccessToken, "User details"));
+});
+
 const logoutUser = asyncHandler(async (req, res, next) => {
   await User.findByIdAndUpdate(
       req.user._id,
@@ -185,5 +205,5 @@ const getAdminUsers = async (req, res) => {
   }
 };
 
-export { userRegister, getAdminUsers, loginUser,logoutUser };
+export { userRegister, getAdminUsers, loginUser,logoutUser,userDetails };
 export default router;
