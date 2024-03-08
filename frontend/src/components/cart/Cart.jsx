@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import '../../styles/cart.scss';
-import Footer from "../home/Footer";
+// import Footer from "../home/Footer";
 import { useCart } from "../Context/CartContext.jsx";
 
 const Cart = () => {

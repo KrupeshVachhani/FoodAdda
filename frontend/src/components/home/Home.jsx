@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import Menu from "../menu/Menu";
 import '../../styles/home.scss'
-import Founder from "../founders/Founder";
+// import Founder from "../founders/Founder";
 import Footer from "./Footer";
 
 const Home = () => {

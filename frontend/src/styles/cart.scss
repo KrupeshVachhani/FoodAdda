@@ -1,29 +1,28 @@
 @import "colors";
+
 .cart {
   width: 100vw;
   height: auto;
+
   > main {
     background-color: $pink;
-    // height: 130vh;
-    background-color: white;
-    // max-width: 900px;
     margin: auto;
     padding: 2rem;
 
     > article {
       padding: 2rem;
+
       > div {
         max-width: 60vw;
         display: flex;
-        justify-content: end;
-        
-        >h4,p{
+        justify-content: flex-end; // Adjusted property
+
+        > h4, p {
           padding: 3%;
           font-size: 2rem;
-
         }
       }
-      
+
       > a {
         background-color: $red;
         color: white;
@@ -31,7 +30,6 @@
         padding: 0.5rem 1rem;
         border-radius: 5px;
         text-align: center;
-        // margin-top: 2rem;
         float: right;
       }
     }
@@ -108,19 +106,24 @@
     width: 100%;
     justify-content: center;
     padding: 4%;
-    >img{
-        width: 18vw;
-        height: auto;    }
+
+    > img {
+      width: 18vw;
+      height: auto;
+    }
   }
+
   .cartItem {
     display: block;
     left: 20px;
   }
+
   .cartItem > .incDcn {
     display: flex;
     gap: 7%;
   }
-  .cart > main{
+
+  .cart > main {
     position: absolute;
   }
 }

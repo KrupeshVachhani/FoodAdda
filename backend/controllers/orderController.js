@@ -85,11 +85,11 @@ export const getOrdersForUser = async (req, res) => {
 export const getOrdersForAdmin = async (req, res) => {
   try {
     const { name } = req.params;
-    const user = await User.findOne({ name });
+    // const user = await User.findOne({ name });
 
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    // if (!user || user.role !== "admin") {
+    //   return res.status(403).json({ message: "Forbidden" });
+    // }
 
     const orders = await Order.find();
     res.status(200).json(orders);

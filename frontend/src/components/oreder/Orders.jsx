@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { AiOutlineEye } from "react-icons/ai";
-import { GiArmoredBoomerang } from "react-icons/gi";
+import React, { useState } from "react";
+// import { Link } from "react-router-dom";
+// import { AiOutlineEye } from "react-icons/ai";
+// import { GiArmoredBoomerang } from "react-icons/gi";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);

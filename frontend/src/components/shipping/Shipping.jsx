@@ -9,6 +9,7 @@ const Shipping = () => {
   const countries = Country.getAllCountries();
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedState, setSelectedState] = useState("");
+  //eslint-disable-next-line
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [name, setName] = useState(""); // State for name input
   const [email, setEmail] = useState(""); // State for email input

@@ -2,12 +2,13 @@
   .nav {
     width: 60vw;
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     margin-left: 50%;
     padding-right: 1%;
     font-size: 1.3rem;
   }
+  
 
   .nav > li {
     padding: 3%;
