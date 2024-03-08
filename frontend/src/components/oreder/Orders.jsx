@@ -46,14 +46,14 @@ const Orders = () => {
   return (
     <section className="tableClass">
       <main>
-        <label htmlFor="username">Enter Admin Username:</label>
+        <label htmlFor="username">Enter Admin Password:</label>
         <input
           type="text"
           id="username"
           value={userName}
           onChange={(e) => setUserName(e.target.value)}
         />
-        <button onClick={fetchAdminData}>Find Admin</button>
+        <button onClick={fetchAdminData}>Find</button>
         {isAdmin ? (
           <table>
             <thead>

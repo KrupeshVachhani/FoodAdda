@@ -2,36 +2,36 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import "../../styles/login.scss";
 
-const Login = () => {
+const Register = () => {
   const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loginError, setLoginError] = useState(false);
+  const [registerError, setRegisterError] = useState(false);
 
-  const handleLogin = () => {
-    if (email.trim() === "" || password.trim() === "" || name.trim() === "") {
-      setLoginError(true);
+  const handleRegister = () => {
+    if (email.trim() === "" || password.trim() === "" || username.trim() === "") {
+      setRegisterError(true);
     } else {
-      setLoginError(false);
+      setRegisterError(false);
 
       // Make the POST request to the server
-      fetch("http://localhost:3000/api/users/login", {
+      fetch("http://localhost:3000/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: name,
           email: email,
           password: password,
+          username: username,
         }),
       })
         .then((response) => response.json())
-        .then(() => {
-            // If user is successfully added, redirect to homepage
-            alert("Logged in successfully!");
-            window.location.href = "/"; // Redirect to homepage
-          
+        .then((data) => {
+          // If user is successfully registered
+
+          window.location.href = "/";
+
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -41,11 +41,11 @@ const Login = () => {
 
   return (
     <section className="login">
-      <motion.button initial={{ y: "-100vh" }} animate={{ y: 0 }}>
+      <motion.div initial={{ y: "-100vh" }} animate={{ y: 0 }}>
         <div className="auth-container">
           <div className="auth-box login-box">
-            <h2>Log In</h2>
-            {loginError && (
+            <h2>Register</h2>
+            {registerError && (
               <p className="auth-error-message">
                 Please fill in all fields correctly.
               </p>
@@ -53,9 +53,9 @@ const Login = () => {
             <input
               className="auth-input"
               type="text"
-              placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
             <input
               className="auth-input"
@@ -71,14 +71,14 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <button className="auth-button" onClick={handleLogin}>
-              Log In
+            <button className="auth-button" onClick={handleRegister}>
+              Register
             </button>
           </div>
         </div>
-      </motion.button>
+      </motion.div>
     </section>
   );
 };
 
-export default Login;
+export default Register;

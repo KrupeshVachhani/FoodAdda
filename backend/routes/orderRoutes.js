@@ -13,6 +13,6 @@ router.post("/postorder", createOrder);
 
 // GET request to fetch all orders for a specific user
 router.get("/user/:userId", verifyJWT, getOrdersForUser);
-router.get("/admin/:name", getOrdersForAdmin);
+router.get("/admin/:pass", getOrdersForAdmin);
 
 export default router;

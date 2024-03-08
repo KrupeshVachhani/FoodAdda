@@ -34,18 +34,7 @@ const Founder = () => {
           Our aim is to give best service to every customer.        </p>
       </motion.div>
     </section>
-    <section className="founder">
-      <motion.div {...options}>
-        <img src={me2} alt="Founder" height={200} width={200} />
-        <h3>Riddhi Sonavane</h3>
-
-        <p>
-          Hey, Everyone I am Riddhi Sonavane, the Developer And Designer.
-          <br />
-          Our aim is to give best service to every customer.
-        </p>
-      </motion.div> 
-     </section>
+   
     </div>
       </div>
   );

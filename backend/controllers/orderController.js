@@ -18,7 +18,7 @@ export const createOrder = async (req, res) => {
 
     const sendOrderConfirmationEmail = async (order) => {
       const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
+        host: "smtp.gmail.com",
         port: 587,
         secure: false,
         auth: {
@@ -81,15 +81,14 @@ export const getOrdersForUser = async (req, res) => {
     res.status(500).send("Internal Server Error.");
   }
 };
-
 export const getOrdersForAdmin = async (req, res) => {
-  try {
-    const { name } = req.params;
-    // const user = await User.findOne({ name });
+  const { pass } = req.params;
 
-    // if (!user || user.role !== "admin") {
-    //   return res.status(403).json({ message: "Forbidden" });
-    // }
+  try {
+    // Check if the password is correct
+    if (pass !== "krupesh") {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
     const orders = await Order.find();
     res.status(200).json(orders);

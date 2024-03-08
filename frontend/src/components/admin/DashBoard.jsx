@@ -44,11 +44,11 @@ const Dashboard = () => {
         
       {loading === false ? (
         <main>
-          <article>
+          {/* <article>
             <Box title="Users" value={213} />
             <Box title="Orders" value={23} />
             <Box title="Income" value={21323} />
-          </article>
+          </article> */}
 
           <section>
             <div>

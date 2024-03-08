@@ -13,25 +13,25 @@ const router = express.Router();
 //generating access token and refresh token
 const generateAccessAndRefreshToken = async (userId) => {
   try {
-      const user = await User.findById(userId);
-      console.log("grf",user);
+    const user = await User.findById(userId);
+    console.log("grf", user);
 
-      //generate a token
-      const accessToken = await user.generateTokens();
-      const refreshToken = await user.generateRefreshToken();
+    //generate a token
+    const accessToken = await user.generateTokens();
+    const refreshToken = await user.generateRefreshToken();
 
-      console.log("generated");
+    console.log("generated");
 
-      //save refresh token in db
-      user.refreshToken = refreshToken;
+    //save refresh token in db
+    user.refreshToken = refreshToken;
 
-      //validateBeforeSave - false
-      //because we don't have password field in user model
-      await user.save({ validateBeforeSave: false });
+    //validateBeforeSave - false
+    //because we don't have password field in user model
+    await user.save({ validateBeforeSave: false });
 
-      return { accessToken, refreshToken };
+    return { accessToken, refreshToken };
   } catch (error) {
-      throw new ApiError(500, "Token generation failed");
+    throw new ApiError(500, "Token generation failed");
   }
 };
 
@@ -110,7 +110,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, "Invalid credentials");
   }
 
-  console.log('password matched')
+  console.log("password matched");
 
   //generate access token and refresh token
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -157,45 +157,46 @@ const userDetails = asyncHandler(async (req, res, next) => {
   }
 
   // Verify the access token
-  const decodedAccessToken = jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRETE);
+  const decodedAccessToken = jwt.verify(
+    accessToken,
+    process.env.ACCESS_TOKEN_SECRETE
+  );
 
   // console.log("decodedaccesstoken",decodedAccessToken);
-  
+
   // Return the user details
-  return res.status(200).json(new ApiResponse(200, decodedAccessToken, "User details"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, decodedAccessToken, "User details"));
 });
 
 const logoutUser = asyncHandler(async (req, res, next) => {
   await User.findByIdAndUpdate(
-      req.user._id,
-      {
-          $set: { refreshToken: undefined },
-      },
-      { new: true },
+    req.user._id,
+    {
+      $set: { refreshToken: undefined },
+    },
+    { new: true }
   );
 
   const options = {
-      httpOnly: true,
-      path: "/",
+    httpOnly: true,
+    path: "/",
   };
 
   return res
-      .status(200)
-      .clearCookie("accessToken", "", options)
-      .clearCookie("refreshToken", "", options)
-      .json(new ApiResponse(200, {}, "Logged out successfully"));
+    .status(200)
+    .clearCookie("accessToken", "", options)
+    .clearCookie("refreshToken", "", options)
+    .json(new ApiResponse(200, {}, "Logged out successfully"));
 });
 
 const getAdminUsers = async (req, res) => {
+  const { pass } = req.params;
   try {
-    const { name } = req.params;
-
-    const user = await User.findOne({ name });
-
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({ message: "Forbidden" });
+    if (pass !== "krupesh") {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-
     const users = await User.find();
 
     res.status(200).json(users);
@@ -205,5 +206,5 @@ const getAdminUsers = async (req, res) => {
   }
 };
 
-export { userRegister, getAdminUsers, loginUser,logoutUser,userDetails };
+export { userRegister, getAdminUsers, loginUser, logoutUser, userDetails };
 export default router;
