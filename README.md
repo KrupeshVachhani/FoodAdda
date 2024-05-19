@@ -43,6 +43,13 @@
 
 ---
 
+### 🎥 Project Demo:
+Check out our project in action! Watch the full demo on YouTube:
+
+[![Project Demo](https://img.youtube.com/vi/8_U81HTZNJg/maxresdefault.jpg)](https://youtu.be/8_U81HTZNJg)
+
+---
+
 ### 🚀 Getting Started:
 1. **Clone the Repository:**
     ```sh
