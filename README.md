@@ -45,6 +45,7 @@
 
 ### 🎥 Project Demo:
 Check out our project in action! Watch the full demo on YouTube:
+Click below:
 
 [![Project Demo](https://img.youtube.com/vi/8_U81HTZNJg/maxresdefault.jpg)](https://youtu.be/8_U81HTZNJg)
 
